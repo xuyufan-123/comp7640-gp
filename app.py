@@ -197,37 +197,45 @@ def user_get_product():
 def user_addorder():
     rq = request.json
     # 获取各个参数
-    lastest_order_id = db.session.execute(text('SELECT order_id FROM `order`')).fetchall()
-    print(lastest_order_id[-1][0])
-    order_id = lastest_order_id[-1][0] + 1
-
-    vendor_id=rq.get("vendor_id")
+    vendor_id = rq.get("vendor_id")
     product_id = rq.get("product_id")
     customer_id = rq.get("customer_id")
-   # consphone = get_token_phone(request.headers.get('token'))
-    status="Order confirmed"
-    date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(type(date))
-    db.session.execute(text('insert into `order`'
-                             +'(order_id, vendor_id, product_id, customer_id, status, date)'
-                              + 'value("%s", "%s", "%s", "%s","%s","%s")' % (
-        order_id, vendor_id, product_id, customer_id, status, date)))
-    db.session.commit()
-
-    return jsonify(status=200, msg="成功下单")
-
+    inventory = db.session.execute(text(('SELECT inventory FROM `product` WHERE product_id="{0}"').format(product_id))).fetchall()
+    Inventory=inventory[0][0]
+    print(Inventory)
+    if(Inventory!=0):
+        db.session.execute(text(('UPDATE product SET inventory = "{0}" WHERE product_id = "{1}"').format(Inventory-1, product_id)))
+        db.session.commit()
+        lastest_order_id = db.session.execute(text('SELECT order_id FROM `order`')).fetchall()
+        order_id = lastest_order_id[-1][0] + 1
+        status="Order confirmed"
+        date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.session.execute(text('insert into `order`'
+                                 +'(order_id, vendor_id, product_id, customer_id, status, date)'
+                                  + 'value("%s", "%s", "%s", "%s","%s","%s")' % (
+            order_id, vendor_id, product_id, customer_id, status, date)))
+        db.session.commit()
+        return jsonify(status=200, msg="Order confirmed")
+    else:
+        return jsonify(status=1000, msg="sold out")
 
 # 查看订单
 @app.route("/api/user/vieworder", methods=["POST"])
 @cross_origin()
 def user_vieworder():
     rq = request.json
+    customer_id=rq.get("customer_id")
     # 获取各个参数
-    lastest_order_id = db.session.execute(text('SELECT order_id FROM `order`')).fetchall()
-    print(lastest_order_id[-1][0])
-    order_id = lastest_order_id[-1][0] + 1
-    return jsonify(status=200, msg="成功下单")
-
+    order = db.session.execute(text(('SELECT order_id, product_name, vendor_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.customer_id="{0}" and order.product_id=product.product_id and order.vendor_id=vendor.vendor_id').format(customer_id))).fetchall()
+    print(order)
+    if(order != []):
+        total_order = []
+        for i in range(len(order)):
+            dic = dict(order_id=order[i][0], product_name=order[i][1], vendor_name=order[i][2], price_pd=order[i][3], status=order[i][4], date=order[i][5] )
+            total_order.append(dic)
+        return jsonify(status=200, msg="viewing total_order", total_order=total_order)
+    else:
+        return jsonify(status=1000, msg="empty order")
 
 
 
