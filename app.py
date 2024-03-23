@@ -55,9 +55,9 @@ def user_login():
             # 生成token
             token = auth.encode_func(customer)
             print(token)
-            return jsonify({"code": 200, "msg": "登录成功", "token": token})
+            return jsonify(status=200, msg="登录成功", token=token)
         else:
-            return jsonify({"code": 1000, "msg": "用户名或密码错误"})
+            return jsonify(status=1000, msg="用户名或密码错误")
 
     if role == "1":
 
@@ -71,11 +71,11 @@ def user_login():
             # 生成token
             token = auth.encode_func(vendor)
             print(token)
-            return jsonify({"code": 200, "msg": "登录成功", "token": token})
+            return jsonify(status=200, msg= "登录成功", token=token)
         else:
-            return jsonify({"code": 1000, "msg": "用户名或密码错误"})
+            return jsonify(status=1000, msg="用户名或密码错误")
     else:
-        return jsonify({"code": 1000, "msg": "请选择身份"})
+        return jsonify(status=1000, msg="请选择身份")
 # 用户注册__发送验证码
 # @app.route("/api/user/register/send_sms", methods=["POST"])
 # @cross_origin()
@@ -140,9 +140,9 @@ def register_test():
                 customer_id, username, password, telephone)))
 
             db.session.commit()
-            return jsonify({"status": "200", "msg": "注册成功"})
+            return jsonify(status=200, msg="注册成功")
         else:
-            return jsonify({"status": "1000", "msg": "该用户已存在"})
+            return jsonify(status=1000, msg="该用户已存在")
 
     if role == "1":
         lastest_vendor_id = db.session.execute(text('select vendor_id from vendor')).fetchall()
@@ -156,9 +156,9 @@ def register_test():
             db.session.execute(text('insert into vendor(vendor_id,vendor_name,score_ave,vd_phone,password) value("%s","%s","%s","%s","%s")' % (
                 vendor_id, username, score, telephone, password)))
             db.session.commit()
-            return jsonify({"status": "200", "msg": "注册成功"})
+            return jsonify(status=200, msg="注册成功")
         else:
-            return jsonify({"status": "1000", "msg": "该用户已存在"})
+            return jsonify(status=1000, msg="该用户已存在")
 
 # 用户界面获取店铺
 @app.route("/api/user/vendor", methods=["GET"])
@@ -197,24 +197,36 @@ def user_get_product():
 def user_addorder():
     rq = request.json
     # 获取各个参数
-    order_id=""
+    lastest_order_id = db.session.execute(text('SELECT order_id FROM `order`')).fetchall()
+    print(lastest_order_id[-1][0])
+    order_id = lastest_order_id[-1][0] + 1
+
     vendor_id=rq.get("vendor_id")
     product_id = rq.get("product_id")
     customer_id = rq.get("customer_id")
    # consphone = get_token_phone(request.headers.get('token'))
     status="Order confirmed"
     date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    db.session.execute(text( 'insert into order(order_id, vendor_id, product_id, customer_id, status, date) value("%d", %d, "%d", "%d","%s","%s")' % (
+    print(type(date))
+    db.session.execute(text('insert into `order`'
+                             +'(order_id, vendor_id, product_id, customer_id, status, date)'
+                              + 'value("%s", "%s", "%s", "%s","%s","%s")' % (
         order_id, vendor_id, product_id, customer_id, status, date)))
     db.session.commit()
 
     return jsonify(status=200, msg="成功下单")
 
 
-
-
-
-
+# 查看订单
+@app.route("/api/user/vieworder", methods=["POST"])
+@cross_origin()
+def user_vieworder():
+    rq = request.json
+    # 获取各个参数
+    lastest_order_id = db.session.execute(text('SELECT order_id FROM `order`')).fetchall()
+    print(lastest_order_id[-1][0])
+    order_id = lastest_order_id[-1][0] + 1
+    return jsonify(status=200, msg="成功下单")
 
 
 
