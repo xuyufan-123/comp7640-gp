@@ -98,8 +98,8 @@ def register_test():
         data = db.session.execute(text('select * from customer where cust_phone="%s"' % telephone)).fetchall()
 
         if not data:
-            db.session.execute(text('insert into customer(id,name,password,cust_phone) value("%s","%s","%s","%s")' % (
-                customer_id, username, password, telephone)))
+            db.session.execute(text('insert into customer(id,name,password,cust_phone,address) value("%d","%s","%s","%s", "%s")' % (
+                customer_id, username, password, telephone, '')))
 
             db.session.commit()
             return jsonify(status=200, msg="注册成功")
@@ -115,7 +115,7 @@ def register_test():
         data = db.session.execute(text('select * from vendor where vd_phone="%s"' % telephone)).fetchall()
 
         if not data:
-            db.session.execute(text('insert into vendor(vendor_id,vendor_name,score_ave,vd_phone,password) value("%s","%s","%s","%s","%s")' % (
+            db.session.execute(text('insert into vendor(vendor_id,vendor_name,score_ave,vd_phone,password) value("%d","%s","%s","%s","%s")' % (
                 vendor_id, username, score, telephone, password)))
             db.session.commit()
             return jsonify(status=200, msg="注册成功")
@@ -153,33 +153,46 @@ def user_get_product():
     return jsonify(status=200, product=Data)
 
 
-# 下订单
+# place orders
 @app.route("/api/user/addorder", methods=["POST"])
 @cross_origin()
 def user_addorder():
     rq = request.json
-    # 获取各个参数
-    vendor_id = rq.get("vendor_id")
-    product_id = rq.get("product_id")
+    orderlist = rq.get("orderlist")
+
     customer_id = rq.get("customer_id")
-    inventory = db.session.execute(text(('SELECT inventory FROM `product` WHERE product_id="{0}"').format(product_id))).fetchall()
-    Inventory=inventory[0][0]
-    print(Inventory)
-    if(Inventory!=0):
-        db.session.execute(text(('UPDATE product SET inventory = "{0}" WHERE product_id = "{1}"').format(Inventory-1, product_id)))
-        db.session.commit()
-        lastest_order_id = db.session.execute(text('SELECT order_id FROM `order`')).fetchall()
-        order_id = lastest_order_id[-1][0] + 1
-        status="Order confirmed"
-        date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        db.session.execute(text('insert into `order`'
-                                 +'(order_id, vendor_id, product_id, customer_id, status, date)'
-                                  + 'value("%d", "%d", "%d", "%d","%s","%s")' % (
-            order_id, vendor_id, product_id, customer_id, status, date)))
-        db.session.commit()
-        return jsonify(status=200, msg="Order confirmed")
-    else:
-        return jsonify(status=1000, msg="sold out")
+    lastest_order = db.session.execute(text('SELECT `order` FROM `order`')).fetchall()
+    order = lastest_order[-1][0] + 1
+    for i in range(len(orderlist)):
+        product_id = orderlist[i].get("product_id")
+        vendor_id = orderlist[i].get("vendor_id")
+        purchase_count = orderlist[i].get("purchase_count")
+        print(product_id)
+
+        inventory = db.session.execute(text(('SELECT inventory FROM `product` WHERE product_id= {0}').format(product_id))).fetchall()
+        Inventory = inventory[0][0]
+        print(Inventory)
+
+        if(Inventory!=0):
+            db.session.execute(text(('UPDATE product SET inventory = "{0}" WHERE product_id = {1}').format(Inventory-purchase_count, product_id)))
+            db.session.commit()
+
+            lastest_order_id = db.session.execute(text('SELECT order_id FROM `order` ORDER BY order_id')).fetchall()
+            order_id = lastest_order_id[-1][0] + 1
+
+
+            status = "Order confirmed"
+            date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            db.session.execute(text('insert into `order`'
+                                     +'(order_id, vendor_id, product_id, customer_id, `status`, date, `order`, purchase_count)'
+                                      + 'value("%d", "%d", "%d", "%d","%s","%s","%d","%d")' % (
+                order_id, vendor_id, product_id, customer_id, status, date, order, purchase_count)))
+            db.session.commit()
+
+        else:
+            return jsonify(status=1000, msg="Insufficient stock of the product")
+    return jsonify(status=200, msg="Order confirmed")
+
 
 # 查看订单
 @app.route("/api/user/vieworder", methods=["POST"])
@@ -188,12 +201,12 @@ def user_vieworder():
     rq = request.json
     customer_id=rq.get("customer_id")
     # 获取各个参数
-    order = db.session.execute(text(('SELECT order_id, product_name, vendor_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.customer_id="{0}" and order.product_id=product.product_id and order.vendor_id=vendor.vendor_id').format(customer_id))).fetchall()
+    order = db.session.execute(text(('SELECT `order`, purchase_count, product_name, vendor_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.customer_id="{0}" and order.product_id=product.product_id and order.vendor_id=vendor.vendor_id').format(customer_id))).fetchall()
     print(order)
     if(order != []):
         total_order = []
         for i in range(len(order)):
-            dic = dict(order_id=order[i][0], product_name=order[i][1], vendor_name=order[i][2], price_pd=order[i][3], status=order[i][4], date=order[i][5] )
+            dic = dict(ordernum=order[i][0], purchase_count=order[i][1], product_name=order[i][2], vendor_name=order[i][3], price_pd=order[i][4], status=order[i][5], date=order[i][6] )
             total_order.append(dic)
         return jsonify(status=200, msg="viewing total_order", total_order=total_order)
     else:
@@ -274,12 +287,12 @@ def vendor_vieworder():
     rq = request.json
     vendor_id=rq.get("vendor_id")
     # 获取各个参数
-    order = db.session.execute(text(('SELECT order_id, customer_id, product_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.product_id=product.product_id and order.vendor_id={0}').format(vendor_id))).fetchall()
+    order = db.session.execute(text(('SELECT `order`, customer_id, product_name, price_pd, `status`, date FROM `order`,`vendor`,`product` WHERE order.product_id=product.product_id and order.vendor_id={0}').format(vendor_id))).fetchall()
     print(order)
     if(order != []):
         total_order = []
         for i in range(len(order)):
-            dic = dict(order_id=order[i][0], customer_id=order[i][1], product_name=order[i][2], price_pd=order[i][3], status=order[i][4], date=order[i][5] )
+            dic = dict(orderid=order[i][0], customer_id=order[i][1], product_name=order[i][2], price_pd=order[i][3], status=order[i][4], date=order[i][5] )
             total_order.append(dic)
         return jsonify(status=200, msg="viewing order", total_order=total_order)
     else:

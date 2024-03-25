@@ -11,7 +11,7 @@
  Target Server Version : 80300
  File Encoding         : 65001
 
- Date: 23/03/2024 17:29:08
+ Date: 25/03/2024 21:21:08
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `customer`  (
   INDEX `username`(`name`) USING BTREE,
   INDEX `password`(`password`) USING BTREE,
   INDEX `id`(`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of customer
@@ -44,6 +44,7 @@ INSERT INTO `customer` VALUES (4, 'xu', '123', '114', NULL);
 INSERT INTO `customer` VALUES (5, 'xu', '123', '115', NULL);
 INSERT INTO `customer` VALUES (8, 'xu', '123', '118', NULL);
 INSERT INTO `customer` VALUES (9, 'xu', '123', '119', NULL);
+INSERT INTO `customer` VALUES (10, 'zhang', '123', '181', '');
 
 -- ----------------------------
 -- Table structure for order
@@ -55,7 +56,9 @@ CREATE TABLE `order`  (
   `product_id` int(0) NOT NULL COMMENT '产品id',
   `customer_id` int(0) NOT NULL COMMENT '顾客id',
   `status` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '物流状态',
-  `date` datetime(0) NOT NULL COMMENT '下单时间',
+  `date` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '下单时间',
+  `order` int(0) DEFAULT NULL,
+  `purchase_count` int(0) DEFAULT NULL,
   PRIMARY KEY (`order_id`) USING BTREE,
   INDEX `vender_id`(`vendor_id`) USING BTREE,
   INDEX `product_id`(`product_id`) USING BTREE,
@@ -63,7 +66,22 @@ CREATE TABLE `order`  (
   CONSTRAINT `customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `vendor_id` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`vendor_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of order
+-- ----------------------------
+INSERT INTO `order` VALUES (29, 10, 100, 1, 'Order confirmed', '2024-03-25 19:22:10', 222, 3);
+INSERT INTO `order` VALUES (30, 10, 101, 1, 'Order confirmed', '2024-03-25 19:22:10', 222, 2);
+INSERT INTO `order` VALUES (31, 10, 100, 1, 'Order confirmed', '2024-03-25 20:03:31', 223, 1);
+INSERT INTO `order` VALUES (32, 10, 100, 1, 'Order confirmed', '2024-03-25 20:21:25', 224, 1);
+INSERT INTO `order` VALUES (33, 10, 100, 1, 'Order confirmed', '2024-03-25 20:25:06', 225, 1);
+INSERT INTO `order` VALUES (34, 10, 101, 1, 'Order confirmed', '2024-03-25 20:25:06', 225, 1);
+INSERT INTO `order` VALUES (35, 10, 100, 1, 'Order confirmed', '2024-03-25 20:36:49', 226, 1);
+INSERT INTO `order` VALUES (36, 11, 102, 1, 'Order confirmed', '2024-03-25 20:36:49', 226, 1);
+INSERT INTO `order` VALUES (37, 10, 100, 1, 'Order confirmed', '2024-03-25 20:42:14', 227, 1);
+INSERT INTO `order` VALUES (38, 10, 100, 1, 'Order confirmed', '2024-03-25 20:49:02', 228, 1);
+INSERT INTO `order` VALUES (39, 11, 102, 1, 'Order confirmed', '2024-03-25 20:49:02', 228, 3);
 
 -- ----------------------------
 -- Table structure for product
@@ -81,8 +99,9 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (100, 't-shirt', 10, 99, 200);
-INSERT INTO `product` VALUES (101, 'sneaker', 10, 199, 200);
+INSERT INTO `product` VALUES (100, 'shirt', 10, 139, 128);
+INSERT INTO `product` VALUES (101, 'sneaker', 10, 199, 183);
+INSERT INTO `product` VALUES (102, 't-shirt', 11, 189, 191);
 
 -- ----------------------------
 -- Table structure for tag
@@ -119,5 +138,6 @@ CREATE TABLE `vendor`  (
 INSERT INTO `vendor` VALUES (12, 'stussy', '0', '119', '123', NULL);
 INSERT INTO `vendor` VALUES (10, 'Nike', '0', '133', '123', 'Kowloon');
 INSERT INTO `vendor` VALUES (11, 'adidas', '0', '134', '123', 'Hong Kong');
+INSERT INTO `vendor` VALUES (13, 'Supreme', '0', '190', '123', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
