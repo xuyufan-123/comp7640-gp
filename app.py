@@ -32,7 +32,7 @@ with app.app_context():
 
 
 
-# 用户登录
+# login
 @app.route("/api/user/login", methods=["POST"])
 @cross_origin()
 def user_login():
@@ -79,7 +79,7 @@ def user_login():
     else:
         return jsonify(status=1000, msg="请选择身份")
 
-# 注册
+# sign up
 @app.route("/api/user/register/test", methods=["POST"])
 @cross_origin()
 def register_test():
@@ -122,7 +122,7 @@ def register_test():
         else:
             return jsonify(status=1000, msg="该用户已存在")
 
-# 用户界面获取店铺
+# customer view vendor list
 @app.route("/api/user/vendor", methods=["GET"])
 @cross_origin()
 def user_get_vendor():
@@ -136,7 +136,7 @@ def user_get_vendor():
     # return jsonify({"status":"200", "tabledata": Data})
     return jsonify(status=200, vendor=Data)
 
-# 用户界面获取店铺信息
+# customer view product list
 @app.route("/api/user/product", methods=["POST"])
 @cross_origin()
 def user_get_product():
@@ -194,13 +194,13 @@ def user_addorder():
     return jsonify(status=200, msg="Order confirmed")
 
 
-# 查看订单
+# view order
 @app.route("/api/user/vieworder", methods=["POST"])
 @cross_origin()
 def user_vieworder():
     rq = request.json
     customer_id=rq.get("customer_id")
-    # 获取各个参数
+
     order = db.session.execute(text(('SELECT `order`, purchase_count, product_name, vendor_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.customer_id="{0}" and order.product_id=product.product_id and order.vendor_id=vendor.vendor_id').format(customer_id))).fetchall()
     print(order)
     if(order != []):
@@ -212,6 +212,15 @@ def user_vieworder():
     else:
         return jsonify(status=1000, msg="empty order")
 
+@app.route("/api/user/score", methods=["POST"])
+@cross_origin()
+def user_score():
+    rq = request.json
+    score = rq.get("score")
+    vendor_id = rq.get("vendor_id")
+    score_info = db.session.execute(text(('SELECT score_ave, score_count FROM vendor WHERE vendor_id={}').format(vendor_id))).fetchall()
+    print(score_info)
+    return jsonify(status=1000, msg="score succeeded")
 ##################################################################################################################################################################################
 
 
