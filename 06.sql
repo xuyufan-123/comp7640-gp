@@ -11,7 +11,7 @@
  Target Server Version : 80300
  File Encoding         : 65001
 
- Date: 25/03/2024 21:21:08
+ Date: 25/03/2024 22:07:40
 */
 
 SET NAMES utf8mb4;
@@ -82,6 +82,8 @@ INSERT INTO `order` VALUES (36, 11, 102, 1, 'Order confirmed', '2024-03-25 20:36
 INSERT INTO `order` VALUES (37, 10, 100, 1, 'Order confirmed', '2024-03-25 20:42:14', 227, 1);
 INSERT INTO `order` VALUES (38, 10, 100, 1, 'Order confirmed', '2024-03-25 20:49:02', 228, 1);
 INSERT INTO `order` VALUES (39, 11, 102, 1, 'Order confirmed', '2024-03-25 20:49:02', 228, 3);
+INSERT INTO `order` VALUES (40, 10, 100, 1, 'Order confirmed', '2024-03-25 22:01:51', 229, 1);
+INSERT INTO `order` VALUES (41, 11, 102, 1, 'Order confirmed', '2024-03-25 22:01:51', 229, 3);
 
 -- ----------------------------
 -- Table structure for product
@@ -99,9 +101,9 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (100, 'shirt', 10, 139, 128);
+INSERT INTO `product` VALUES (100, 'shirt', 10, 139, 127);
 INSERT INTO `product` VALUES (101, 'sneaker', 10, 199, 183);
-INSERT INTO `product` VALUES (102, 't-shirt', 11, 189, 191);
+INSERT INTO `product` VALUES (102, 't-shirt', 11, 189, 188);
 
 -- ----------------------------
 -- Table structure for tag
@@ -122,9 +124,10 @@ CREATE TABLE `tag`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `vendor`;
 CREATE TABLE `vendor`  (
+  `score_count` int(0) DEFAULT NULL,
   `vendor_id` int(0) NOT NULL COMMENT '卖家id',
   `vendor_name` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '卖家姓名',
-  `score_ave` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '顾客评价的平均值',
+  `score_ave` float(50, 0) DEFAULT NULL COMMENT '顾客评价的平均值',
   `vd_phone` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '商家电话可用于登录',
   `password` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '商家登录密码',
   `geo` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '发货地',
@@ -135,9 +138,9 @@ CREATE TABLE `vendor`  (
 -- ----------------------------
 -- Records of vendor
 -- ----------------------------
-INSERT INTO `vendor` VALUES (12, 'stussy', '0', '119', '123', NULL);
-INSERT INTO `vendor` VALUES (10, 'Nike', '0', '133', '123', 'Kowloon');
-INSERT INTO `vendor` VALUES (11, 'adidas', '0', '134', '123', 'Hong Kong');
-INSERT INTO `vendor` VALUES (13, 'Supreme', '0', '190', '123', NULL);
+INSERT INTO `vendor` VALUES (10, 12, 'stussy', 0, '119', '123', NULL);
+INSERT INTO `vendor` VALUES (10, 10, 'Nike', 0, '133', '123', 'Kowloon');
+INSERT INTO `vendor` VALUES (10, 11, 'adidas', 0, '134', '123', 'Hong Kong');
+INSERT INTO `vendor` VALUES (10, 13, 'Supreme', 0, '190', '123', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
