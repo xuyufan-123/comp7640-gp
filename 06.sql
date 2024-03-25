@@ -11,7 +11,7 @@
  Target Server Version : 80300
  File Encoding         : 65001
 
- Date: 25/03/2024 22:07:40
+ Date: 26/03/2024 04:09:45
 */
 
 SET NAMES utf8mb4;
@@ -66,7 +66,7 @@ CREATE TABLE `order`  (
   CONSTRAINT `customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `vendor_id` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`vendor_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of order
@@ -112,12 +112,20 @@ DROP TABLE IF EXISTS `tag`;
 CREATE TABLE `tag`  (
   `tagid` int(0) NOT NULL COMMENT '标签id',
   `p_id` int(0) NOT NULL COMMENT '对应的产品id',
-  `ctlog` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '类别',
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标签名',
+  `colour` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `size` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `thickness` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`tagid`) USING BTREE,
   INDEX `product_id`(`p_id`) USING BTREE,
   CONSTRAINT `productid` FOREIGN KEY (`p_id`) REFERENCES `product` (`product_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tag
+-- ----------------------------
+INSERT INTO `tag` VALUES (1, 100, 'black', 'small-size', 'thick');
+INSERT INTO `tag` VALUES (2, 101, 'blue', 'over-size', 'thin');
+INSERT INTO `tag` VALUES (3, 102, 'white', 'small-size', 'thick');
 
 -- ----------------------------
 -- Table structure for vendor
@@ -127,7 +135,7 @@ CREATE TABLE `vendor`  (
   `score_count` int(0) DEFAULT NULL,
   `vendor_id` int(0) NOT NULL COMMENT '卖家id',
   `vendor_name` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '卖家姓名',
-  `score_ave` float(50, 0) DEFAULT NULL COMMENT '顾客评价的平均值',
+  `score_ave` float(50, 2) DEFAULT NULL COMMENT '顾客评价的平均值',
   `vd_phone` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '商家电话可用于登录',
   `password` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '商家登录密码',
   `geo` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '发货地',
@@ -138,9 +146,9 @@ CREATE TABLE `vendor`  (
 -- ----------------------------
 -- Records of vendor
 -- ----------------------------
-INSERT INTO `vendor` VALUES (10, 12, 'stussy', 0, '119', '123', NULL);
-INSERT INTO `vendor` VALUES (10, 10, 'Nike', 0, '133', '123', 'Kowloon');
-INSERT INTO `vendor` VALUES (10, 11, 'adidas', 0, '134', '123', 'Hong Kong');
-INSERT INTO `vendor` VALUES (10, 13, 'Supreme', 0, '190', '123', NULL);
+INSERT INTO `vendor` VALUES (1, 12, 'stussy', 0.00, '119', '123', NULL);
+INSERT INTO `vendor` VALUES (4, 10, 'Nike', 4.75, '133', '123', 'Kowloon');
+INSERT INTO `vendor` VALUES (1, 11, 'adidas', 0.00, '134', '123', 'Hong Kong');
+INSERT INTO `vendor` VALUES (1, 13, 'Supreme', 0.00, '190', '123', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
