@@ -159,7 +159,6 @@ def user_get_product():
 def user_addorder():
     rq = request.json
     orderlist = rq.get("orderlist")
-
     customer_id = rq.get("customer_id")
     lastest_order = db.session.execute(text('SELECT `order` FROM `order`')).fetchall()
     order = lastest_order[-1][0] + 1
@@ -218,9 +217,53 @@ def user_score():
     rq = request.json
     score = rq.get("score")
     vendor_id = rq.get("vendor_id")
-    score_info = db.session.execute(text(('SELECT score_ave, score_count FROM vendor WHERE vendor_id={}').format(vendor_id))).fetchall()
+    score_info = db.session.execute(text(('SELECT score_ave, score_count FROM vendor WHERE vendor_id={0}').format(vendor_id))).fetchall()
     print(score_info)
-    return jsonify(status=1000, msg="score succeeded")
+    score_count = score_info[0][1]+1
+    score_ave = (score_info[0][0]*score_info[0][1] + score)/score_count
+    print(score_count, score_ave)
+    db.session.execute(text(
+        ('UPDATE vendor SET score_ave = {0}, score_count= {1} WHERE vendor_id = {2}').format(score_ave, score_count, vendor_id)))
+    db.session.commit()
+    return jsonify(status=200, msg="score succeeded")
+
+@app.route("/api/user/showtags", methods=["GET"])
+@cross_origin()
+def user_showtags():
+
+    data_colour = db.session.execute(text('SELECT DISTINCT colour FROM tag')).fetchall()
+    colour = []
+    print(data_colour[1][0])
+    for i in range(len(data_colour)):
+        colour.append(data_colour[i][0])
+
+    data_thickness = db.session.execute(text('SELECT DISTINCT thickness FROM tag')).fetchall()
+    thickness = []
+    for i in range(len(data_thickness)):
+        thickness.append(data_thickness[i][0])
+
+    data_size = db.session.execute(text('SELECT DISTINCT size FROM tag')).fetchall()
+    size = []
+    for i in range(len(data_size)):
+        size.append(data_size[i][0])
+    return jsonify(colour=colour, thickness=thickness, size=size)
+
+@app.route("/api/user/searchwithtags", methods=["POST"])
+@cross_origin()
+def user_searchwithtags():
+    rq = request.json
+    colour = rq.get("colour")
+    thickness = rq.get("thickness")
+    size = rq.get("size")
+    Data = db.session.execute(text(('SELECT product.product_id, product.product_name, vendor.vendor_name, product.price_pd, product.inventory FROM product JOIN vendor ON vendor.vendor_id = product.vendor_id JOIN tag ON tag.p_id = product.product_id WHERE tag.colour ="{0}" AND tag.thickness = "{1}" AND tag.size = "{2}"').format(colour, thickness, size))).fetchall()
+    if(Data!=None):
+        data = []
+        for i in range(len(Data)):
+            dic = dict(product_id=Data[i][0], product_name=Data[i][1], vendor_name=Data[i][2], price_pd=Data[i][3], inventory=Data[i][4])
+            data.append(dic)
+        return jsonify(product=data)
+    else:
+        return jsonify(msg="No result")
 ##################################################################################################################################################################################
 
 
