@@ -247,7 +247,7 @@ def user_showtags():
     size = []
     for i in range(len(data_size)):
         size.append(data_size[i][0])
-    return jsonify(colour=colour, thickness=thickness, size=size)
+    return jsonify(status=200, colour=colour, thickness=thickness, size=size)
 
 @app.route("/api/user/searchwithtags", methods=["POST"])
 @cross_origin()
@@ -263,9 +263,9 @@ def user_searchwithtags():
         for i in range(len(Data)):
             dic = dict(product_id=Data[i][0], product_name=Data[i][1], price_pd=Data[i][2], inventory=Data[i][3],colour=colour, thickness=thickness, size=size)
             data.append(dic)
-        return jsonify(product=data)
+        return jsonify(status=200, product=data)
     else:
-        return jsonify(msg="No result")
+        return jsonify(status=200, msg="No result")
 ##################################################################################################################################################################################
 
 
