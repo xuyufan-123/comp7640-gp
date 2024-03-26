@@ -11,7 +11,7 @@
  Target Server Version : 80300
  File Encoding         : 65001
 
- Date: 26/03/2024 04:09:45
+ Date: 26/03/2024 16:50:28
 */
 
 SET NAMES utf8mb4;
@@ -62,16 +62,13 @@ CREATE TABLE `order`  (
   PRIMARY KEY (`order_id`) USING BTREE,
   INDEX `vender_id`(`vendor_id`) USING BTREE,
   INDEX `product_id`(`product_id`) USING BTREE,
-  INDEX `customer_id`(`customer_id`) USING BTREE,
-  CONSTRAINT `customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `vendor_id` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`vendor_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  INDEX `customer_id`(`customer_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of order
 -- ----------------------------
-INSERT INTO `order` VALUES (29, 10, 100, 1, 'Order confirmed', '2024-03-25 19:22:10', 222, 3);
+INSERT INTO `order` VALUES (29, 10, 100, 1, 'Shipped', '2024-03-25 19:22:10', 222, 3);
 INSERT INTO `order` VALUES (30, 10, 101, 1, 'Order confirmed', '2024-03-25 19:22:10', 222, 2);
 INSERT INTO `order` VALUES (31, 10, 100, 1, 'Order confirmed', '2024-03-25 20:03:31', 223, 1);
 INSERT INTO `order` VALUES (32, 10, 100, 1, 'Order confirmed', '2024-03-25 20:21:25', 224, 1);
@@ -101,9 +98,9 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (100, 'shirt', 10, 139, 127);
+INSERT INTO `product` VALUES (100, 'shirt', 10, 139, 150);
 INSERT INTO `product` VALUES (101, 'sneaker', 10, 199, 183);
-INSERT INTO `product` VALUES (102, 't-shirt', 11, 189, 188);
+INSERT INTO `product` VALUES (103, 'pants', 10, 399, 300);
 
 -- ----------------------------
 -- Table structure for tag
@@ -116,8 +113,7 @@ CREATE TABLE `tag`  (
   `size` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `thickness` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`tagid`) USING BTREE,
-  INDEX `product_id`(`p_id`) USING BTREE,
-  CONSTRAINT `productid` FOREIGN KEY (`p_id`) REFERENCES `product` (`product_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  INDEX `product_id`(`p_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -147,7 +143,7 @@ CREATE TABLE `vendor`  (
 -- Records of vendor
 -- ----------------------------
 INSERT INTO `vendor` VALUES (1, 12, 'stussy', 0.00, '119', '123', NULL);
-INSERT INTO `vendor` VALUES (4, 10, 'Nike', 4.75, '133', '123', 'Kowloon');
+INSERT INTO `vendor` VALUES (5, 10, 'Nike', 4.60, '133', '123', 'Kowloon');
 INSERT INTO `vendor` VALUES (1, 11, 'adidas', 0.00, '134', '123', 'Hong Kong');
 INSERT INTO `vendor` VALUES (1, 13, 'Supreme', 0.00, '190', '123', NULL);
 
