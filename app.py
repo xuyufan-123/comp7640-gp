@@ -127,12 +127,11 @@ def register_test():
 @cross_origin()
 def user_get_vendor():
     data = db.session.execute(text('select * from vendor')).fetchall()
-
+    print(data)
     Data = []
     for i in range(len(data)):
-        dic = dict(vendor_id=data[i][0], vendor_name=data[i][1], score=data[i][2])
+        dic = dict(vendor_id=data[i][1], vendor_name=data[i][2], score=data[i][3])
         Data.append(dic)
-    print(Data)
     # return jsonify({"status":"200", "tabledata": Data})
     return jsonify(status=200, vendor=Data)
 
