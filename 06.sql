@@ -11,7 +11,7 @@
  Target Server Version : 80300
  File Encoding         : 65001
 
- Date: 26/03/2024 16:50:28
+ Date: 26/03/2024 17:48:36
 */
 
 SET NAMES utf8mb4;
@@ -81,6 +81,11 @@ INSERT INTO `order` VALUES (38, 10, 100, 1, 'Order confirmed', '2024-03-25 20:49
 INSERT INTO `order` VALUES (39, 11, 102, 1, 'Order confirmed', '2024-03-25 20:49:02', 228, 3);
 INSERT INTO `order` VALUES (40, 10, 100, 1, 'Order confirmed', '2024-03-25 22:01:51', 229, 1);
 INSERT INTO `order` VALUES (41, 11, 102, 1, 'Order confirmed', '2024-03-25 22:01:51', 229, 3);
+INSERT INTO `order` VALUES (42, 10, 100, 1, 'Order confirmed', '2024-03-26 17:35:11', 230, 1);
+INSERT INTO `order` VALUES (43, 10, 100, 1, 'Order confirmed', '2024-03-26 17:40:12', 231, 1);
+INSERT INTO `order` VALUES (44, 10, 100, 1, 'Order confirmed', '2024-03-26 17:40:31', 232, 1);
+INSERT INTO `order` VALUES (45, 10, 100, 1, 'Order confirmed', '2024-03-26 17:42:58', 233, 1);
+INSERT INTO `order` VALUES (46, 11, 101, 1, 'Order confirmed', '2024-03-26 17:42:58', 233, 3);
 
 -- ----------------------------
 -- Table structure for product
@@ -98,9 +103,10 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (100, 'shirt', 10, 139, 150);
-INSERT INTO `product` VALUES (101, 'sneaker', 10, 199, 183);
+INSERT INTO `product` VALUES (100, 'coat', 10, 139, 146);
+INSERT INTO `product` VALUES (101, 'sneaker', 10, 199, 180);
 INSERT INTO `product` VALUES (103, 'pants', 10, 399, 300);
+INSERT INTO `product` VALUES (104, 'pants', 10, 399, 300);
 
 -- ----------------------------
 -- Table structure for tag
@@ -122,6 +128,7 @@ CREATE TABLE `tag`  (
 INSERT INTO `tag` VALUES (1, 100, 'black', 'small-size', 'thick');
 INSERT INTO `tag` VALUES (2, 101, 'blue', 'over-size', 'thin');
 INSERT INTO `tag` VALUES (3, 102, 'white', 'small-size', 'thick');
+INSERT INTO `tag` VALUES (4, 104, 'pink', 'small-size', 'thick');
 
 -- ----------------------------
 -- Table structure for vendor

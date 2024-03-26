@@ -169,6 +169,7 @@ def user_addorder():
         print(product_id)
 
         inventory = db.session.execute(text(('SELECT inventory FROM `product` WHERE product_id= {0}').format(product_id))).fetchall()
+        print("inventory", inventory)
         Inventory = inventory[0][0]
         print(Inventory)
 
@@ -277,10 +278,10 @@ def vendor_get_product():
     rq = request.json
     vendor_id = rq.get("vendor_id")
     print(vendor_id)
-    data = db.session.execute(text(('SELECT product_id, product_name, price_pd, inventory colour, thickness, size FROM product, tag WHERE vendor_id = {0}').format(vendor_id))).fetchall()
+    data = db.session.execute(text(('SELECT product_id, product_name, price_pd, inventory, colour, thickness, size FROM product, tag WHERE tag.p_id=product.product_id AND vendor_id = {0}').format(vendor_id))).fetchall()
     Data = []
     for i in range(len(data)):
-        dic = dict(product_id=data[i][0], product_name=data[i][1], price=data[i][2], inventory=data[i][3])
+        dic = dict(product_id=data[i][0], product_name=data[i][1], price=data[i][2], inventory=data[i][3],colour=data[i][4],thickness=data[i][5],size=data[i][6])
         Data.append(dic)
     print(Data)
     return jsonify(status=200, product=Data)
