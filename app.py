@@ -261,7 +261,7 @@ def user_searchwithtags():
     if(Data!=None):
         data = []
         for i in range(len(Data)):
-            dic = dict(product_id=Data[i][0], product_name=Data[i][1], price_pd=Data[i][2], inventory=Data[i][3],colour=colour, thickness=thickness, size=size)
+            dic = dict(product_id=Data[i][0], product_name=Data[i][1], price=Data[i][2], inventory=Data[i][3],colour=colour, thickness=thickness, size=size)
             data.append(dic)
         return jsonify(status=200, product=data)
     else:
