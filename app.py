@@ -252,14 +252,15 @@ def user_showtags():
 @cross_origin()
 def user_searchwithtags():
     rq = request.json
+    vendor_id = rq.get("vendor_id")
     colour = rq.get("colour")
     thickness = rq.get("thickness")
     size = rq.get("size")
-    Data = db.session.execute(text(('SELECT product.product_id, product.product_name, vendor.vendor_name, product.price_pd, product.inventory FROM product JOIN vendor ON vendor.vendor_id = product.vendor_id JOIN tag ON tag.p_id = product.product_id WHERE tag.colour ="{0}" AND tag.thickness = "{1}" AND tag.size = "{2}"').format(colour, thickness, size))).fetchall()
+    Data = db.session.execute(text(('SELECT product.product_id, product.product_name, product.price_pd, product.inventory FROM product JOIN tag ON tag.p_id = product.product_id WHERE tag.colour ="{0}" AND tag.thickness = "{1}" AND tag.size = "{2}" AND vendor_id={3}').format(colour, thickness, size, vendor_id))).fetchall()
     if(Data!=None):
         data = []
         for i in range(len(Data)):
-            dic = dict(product_id=Data[i][0], product_name=Data[i][1], vendor_name=Data[i][2], price_pd=Data[i][3], inventory=Data[i][4])
+            dic = dict(product_id=Data[i][0], product_name=Data[i][1], price_pd=Data[i][2], inventory=Data[i][3],colour=colour, thickness=thickness, size=size)
             data.append(dic)
         return jsonify(product=data)
     else:
@@ -276,7 +277,7 @@ def vendor_get_product():
     rq = request.json
     vendor_id = rq.get("vendor_id")
     print(vendor_id)
-    data = db.session.execute(text(('SELECT product_id, product_name, price_pd, inventory FROM product WHERE vendor_id = {0}').format(vendor_id))).fetchall()
+    data = db.session.execute(text(('SELECT product_id, product_name, price_pd, inventory colour, thickness, size FROM product, tag WHERE vendor_id = {0}').format(vendor_id))).fetchall()
     Data = []
     for i in range(len(data)):
         dic = dict(product_id=data[i][0], product_name=data[i][1], price=data[i][2], inventory=data[i][3])
@@ -294,14 +295,25 @@ def vendor_add_product():
     vendor_id = rq.get("vendor_id")
     price_pd = rq.get("price_pd")
     inventory = rq.get("inventory")
+    colour=rq.get("colour")
+    thickness=rq.get("thickness")
+    size=rq.get("size")
 
     lastest_product_id = db.session.execute(text('SELECT product_id FROM `product`')).fetchall()
     product_id = lastest_product_id[-1][0] + 1
+
+    lastest_tag_id = db.session.execute(text('SELECT tagid FROM `tag`')).fetchall()
+    tag_id = lastest_tag_id[-1][0] + 1
     print(product_id)
     db.session.execute(text('insert into `product`'
                             + '(product_id, product_name, vendor_id, price_pd, inventory)'
                             + 'value("%d", "%s", "%d", "%d","%d")' % (
                                 product_id, product_name, vendor_id, price_pd, inventory)))
+    db.session.commit()
+    db.session.execute(text('insert into `tag`'
+                            + '(tagid, p_id, colour, thickness, size)'
+                            + 'value("%d", "%d", "%s", "%s","%s")' % (
+                                tag_id, product_id, colour, thickness, size)))
     db.session.commit()
     return jsonify(status=200, msg="add product succeeded")
 
