@@ -68,11 +68,11 @@ def user_login():
         data = db.session.execute(text(sql)).first()
         print(data)
         if data != None:
-            vendor = {'id': data[0], 'username': data[1], 'password': data[4]}
+            vendor = {'id': data[1], 'username': data[2], 'password': data[5]}
             # 生成token
             token = auth.encode_func(vendor)
             print(token)
-            vendor_id = data[0]
+            vendor_id = data[1]
             return jsonify(status=200, msg= "登录成功", token=token, vendor_id=vendor_id)
         else:
             return jsonify(status=1000, msg="用户名或密码错误")
@@ -143,10 +143,11 @@ def user_get_product():
     rq = request.json
     vendor_id = rq.get("vendor_id")
     print(vendor_id)
-    data = db.session.execute(text(('SELECT product_id, product_name, price_pd, inventory FROM product WHERE vendor_id = {0}').format(vendor_id))).fetchall()
+    data = db.session.execute(text(('SELECT product_id, product_name, price_pd, inventory, colour, thickness, size FROM product, tag WHERE tag.p_id= product.product_id AND vendor_id = {0}').format(vendor_id))).fetchall()
+    print(data)
     Data = []
     for i in range(len(data)):
-        dic = dict(product_id=data[i][0], product_name=data[i][1], price=data[i][2], inventory=data[i][3])
+        dic = dict(product_id=data[i][0], product_name=data[i][1], price=data[i][2], inventory=data[i][3], colour=data[i][4], thickness=data[i][5], size=data[i][6])
         Data.append(dic)
     print(Data)
     return jsonify(status=200, product=Data)
@@ -327,7 +328,7 @@ def vendor_delete_product():
     rq = request.json
     product_id = rq.get("product_id")
     db.session.execute(
-        text(('DELETE FROM product WHERE product_id = "{0}"').format(product_id)))
+        text(('DELETE FROM product WHERE product_id = {0}').format(product_id)))
     db.session.commit()
     return jsonify(status=200, msg="delete product succeeded")
 
@@ -338,12 +339,12 @@ def vendor_vieworder():
     rq = request.json
     vendor_id=rq.get("vendor_id")
     # 获取各个参数
-    order = db.session.execute(text(('SELECT `order`, customer_id, product_name, price_pd, `status`, date FROM `order`,`vendor`,`product` WHERE order.product_id=product.product_id and order.vendor_id={0}').format(vendor_id))).fetchall()
+    order = db.session.execute(text(('SELECT `order_id`, customer_id, product_name, price_pd, `status`, date, address FROM customer, `order`,`vendor`,`product` WHERE customer.id=`order`.customer_id AND `order`.product_id=product.product_id and `order`.vendor_id={0}').format(vendor_id))).fetchall()
     print(order)
     if(order != []):
         total_order = []
         for i in range(len(order)):
-            dic = dict(orderid=order[i][0], customer_id=order[i][1], product_name=order[i][2], price_pd=order[i][3], status=order[i][4], date=order[i][5] )
+            dic = dict(orderid=order[i][0], customer_id=order[i][1], product_name=order[i][2], price_pd=order[i][3], status=order[i][4], date=order[i][5], address=order[i][6])
             total_order.append(dic)
         return jsonify(status=200, msg="viewing order", total_order=total_order)
     else:
