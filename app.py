@@ -212,6 +212,22 @@ def user_vieworder():
     else:
         return jsonify(status=1000, msg="empty order")
 
+@app.route("/api/user/deleteorder", methods=["POST"])
+@cross_origin()
+def user_deleteorder():
+
+    rq = request.json
+    order_id=rq.get("order_id")
+    status = db.session.execute(text(('SELECT status FROM `order` WHERE order_id="{0}" ').format(order_id))).fetchall()
+    if(status[0][0]=="Order confirmed"):
+        db.session.execute(
+            text(('DELETE FROM `order` WHERE order_id = {0}').format(order_id)))
+        db.session.commit()
+        return jsonify(status=200, msg="delete succeeded")
+    else:
+        return jsonify(status=1000, msg="This products is Non-returnable ")
+
+
 @app.route("/api/user/score", methods=["POST"])
 @cross_origin()
 def user_score():
@@ -302,10 +318,10 @@ def vendor_add_product():
 
     lastest_product_id = db.session.execute(text('SELECT product_id FROM `product`')).fetchall()
     product_id = lastest_product_id[-1][0] + 1
-
+    print(product_id)
     lastest_tag_id = db.session.execute(text('SELECT tagid FROM `tag`')).fetchall()
     tag_id = lastest_tag_id[-1][0] + 1
-    print(product_id)
+    print(tag_id)
     db.session.execute(text('insert into `product`'
                             + '(product_id, product_name, vendor_id, price_pd, inventory)'
                             + 'value("%d", "%s", "%d", "%d","%d")' % (
