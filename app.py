@@ -201,12 +201,12 @@ def user_vieworder():
     rq = request.json
     customer_id=rq.get("customer_id")
 
-    order = db.session.execute(text(('SELECT `order`, purchase_count, product_name, vendor_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.customer_id="{0}" and order.product_id=product.product_id and order.vendor_id=vendor.vendor_id').format(customer_id))).fetchall()
+    order = db.session.execute(text(('SELECT order_id, `order`, purchase_count, product_name, vendor_name, price_pd, status, date FROM `order`,`vendor`,`product` WHERE order.customer_id="{0}" and order.product_id=product.product_id and order.vendor_id=vendor.vendor_id').format(customer_id))).fetchall()
     print(order)
     if(order != []):
         total_order = []
         for i in range(len(order)):
-            dic = dict(ordernum=order[i][0], purchase_count=order[i][1], product_name=order[i][2], vendor_name=order[i][3], price_pd=order[i][4], status=order[i][5], date=order[i][6] )
+            dic = dict(order_id=order[i][0], ordernum=order[i][1], purchase_count=order[i][2], product_name=order[i][3], vendor_name=order[i][4], price_pd=order[i][5], status=order[i][6], date=order[i][7] )
             total_order.append(dic)
         return jsonify(status=200, msg="viewing total_order", total_order=total_order)
     else:
